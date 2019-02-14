@@ -43,7 +43,6 @@ namespace Synchronous_Server_Example1
         {
             byte[] buffer = new byte[bufferSize];
             try {
-                EndPoint sender = (EndPoint)new IPEndPoint(IPAddress.Any, 0);
                 socket.Receive(buffer);
 
                 return Encoding.ASCII.GetString(buffer).Trim();

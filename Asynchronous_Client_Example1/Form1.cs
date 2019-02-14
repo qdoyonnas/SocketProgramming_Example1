@@ -39,7 +39,7 @@ namespace Asynchronous_Client_Example1
 
                 client.Connect(sAddress, sPort);
                 if( client.readyToSend ) {
-                    Console.WriteLine("Successfully connected");
+					client.StartListening();
                     AddPlayer();
 
                     StartGame();
