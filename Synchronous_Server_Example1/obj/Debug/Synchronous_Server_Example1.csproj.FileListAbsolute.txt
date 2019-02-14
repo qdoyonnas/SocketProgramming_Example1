@@ -1,0 +1,9 @@
+C:\Users\001185088\Desktop\SocketProgramming_Example1\Synchronous_Server_Example1\bin\Debug\Asynchronous_Server_Example1.exe.config
+C:\Users\001185088\Desktop\SocketProgramming_Example1\Synchronous_Server_Example1\obj\Debug\Asynchronous_Server_Example1.exe
+C:\Users\001185088\Desktop\SocketProgramming_Example1\Synchronous_Server_Example1\obj\Debug\Asynchronous_Server_Example1.pdb
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Synchronous_Server_Example1\bin\Debug\Asynchronous_Server_Example1.exe.config
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Synchronous_Server_Example1\obj\Debug\Asynchronous_Server_Example1.exe
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Synchronous_Server_Example1\obj\Debug\Asynchronous_Server_Example1.pdb
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Synchronous_Server_Example1\bin\Debug\Asynchronous_Server_Example1.exe
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Synchronous_Server_Example1\bin\Debug\Asynchronous_Server_Example1.pdb
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Synchronous_Server_Example1\obj\Debug\Synchronous_Server_Example1.csprojResolveAssemblyReference.cache

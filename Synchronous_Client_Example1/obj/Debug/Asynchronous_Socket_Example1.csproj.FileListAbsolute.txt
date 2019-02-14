@@ -1,0 +1,6 @@
+C:\Users\Ivor Darsil\source\repos\Asynchronous_Socket_Example1\Asynchronous_Socket_Example1\bin\Debug\Asynchronous_Socket_Example1.exe.config
+C:\Users\Ivor Darsil\source\repos\Asynchronous_Socket_Example1\Asynchronous_Socket_Example1\bin\Debug\Asynchronous_Socket_Example1.exe
+C:\Users\Ivor Darsil\source\repos\Asynchronous_Socket_Example1\Asynchronous_Socket_Example1\bin\Debug\Asynchronous_Socket_Example1.pdb
+C:\Users\Ivor Darsil\source\repos\Asynchronous_Socket_Example1\Asynchronous_Socket_Example1\obj\Debug\Asynchronous_Socket_Example1.csprojResolveAssemblyReference.cache
+C:\Users\Ivor Darsil\source\repos\Asynchronous_Socket_Example1\Asynchronous_Socket_Example1\obj\Debug\Asynchronous_Socket_Example1.exe
+C:\Users\Ivor Darsil\source\repos\Asynchronous_Socket_Example1\Asynchronous_Socket_Example1\obj\Debug\Asynchronous_Socket_Example1.pdb
