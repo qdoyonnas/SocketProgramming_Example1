@@ -6,8 +6,6 @@ C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client
 C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.csproj.GenerateResource.Cache
 C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.exe
 C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.pdb
-C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.csprojAssemblyReference.cache
-C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.csproj.CoreCompileInputs.cache
 C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\bin\Debug\Asynchronous_Client_Example1.exe.config
 C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.exe
 C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.pdb
@@ -17,3 +15,4 @@ C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_E
 C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.Form1.resources
 C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.Properties.Resources.resources
 C:\Users\001185088\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.csproj.GenerateResource.Cache
+C:\Users\Ivor Darsil\source\repos\SocketProgramming_Example1\Asynchronous_Client_Example1\obj\Debug\Asynchronous_Client_Example1.csprojResolveAssemblyReference.cache

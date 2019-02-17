@@ -28,12 +28,14 @@
         private void InitializeComponent()
         {
             this.addressTextBox = new System.Windows.Forms.TextBox();
-            this.portTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.canvas = new System.Windows.Forms.PictureBox();
             this.connectButton = new System.Windows.Forms.Button();
             this.disconnectButton = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.remotePortTextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.localPortTextbox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.SuspendLayout();
             // 
@@ -47,16 +49,6 @@
             this.addressTextBox.TabIndex = 3;
             this.addressTextBox.Text = "127.0.0.1";
             // 
-            // portTextBox
-            // 
-            this.portTextBox.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.portTextBox.ForeColor = System.Drawing.SystemColors.Window;
-            this.portTextBox.Location = new System.Drawing.Point(650, 90);
-            this.portTextBox.Name = "portTextBox";
-            this.portTextBox.Size = new System.Drawing.Size(140, 20);
-            this.portTextBox.TabIndex = 4;
-            this.portTextBox.Text = "11010";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -66,16 +58,6 @@
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = "Address";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(650, 74);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(26, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Port";
             // 
             // canvas
             // 
@@ -88,7 +70,7 @@
             // 
             // connectButton
             // 
-            this.connectButton.Location = new System.Drawing.Point(650, 117);
+            this.connectButton.Location = new System.Drawing.Point(650, 200);
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(75, 23);
             this.connectButton.TabIndex = 8;
@@ -106,18 +88,60 @@
             this.disconnectButton.UseVisualStyleBackColor = true;
             this.disconnectButton.Click += new System.EventHandler(this.disconnectButton_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.White;
+            this.label2.Location = new System.Drawing.Point(650, 74);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(66, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Remote Port";
+            // 
+            // remotePortTextBox
+            // 
+            this.remotePortTextBox.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.remotePortTextBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.remotePortTextBox.Location = new System.Drawing.Point(650, 90);
+            this.remotePortTextBox.Name = "remotePortTextBox";
+            this.remotePortTextBox.Size = new System.Drawing.Size(140, 20);
+            this.remotePortTextBox.TabIndex = 4;
+            this.remotePortTextBox.Text = "1010";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(650, 158);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(55, 13);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Local Port";
+            // 
+            // localPortTextbox
+            // 
+            this.localPortTextbox.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.localPortTextbox.ForeColor = System.Drawing.SystemColors.Window;
+            this.localPortTextbox.Location = new System.Drawing.Point(650, 174);
+            this.localPortTextbox.Name = "localPortTextbox";
+            this.localPortTextbox.Size = new System.Drawing.Size(140, 20);
+            this.localPortTextbox.TabIndex = 10;
+            this.localPortTextbox.Text = "1010";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(100)))));
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.localPortTextbox);
             this.Controls.Add(this.disconnectButton);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.canvas);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.portTextBox);
+            this.Controls.Add(this.remotePortTextBox);
             this.Controls.Add(this.addressTextBox);
             this.Name = "Form1";
             this.Text = "Chat Client";
@@ -129,12 +153,14 @@
 
 		#endregion
 		private System.Windows.Forms.TextBox addressTextBox;
-		private System.Windows.Forms.TextBox portTextBox;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox canvas;
         private System.Windows.Forms.Button connectButton;
         private System.Windows.Forms.Button disconnectButton;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox remotePortTextBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox localPortTextbox;
     }
 }
 

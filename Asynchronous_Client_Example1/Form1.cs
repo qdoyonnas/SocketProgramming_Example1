@@ -1,17 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace Asynchronous_Client_Example1
 {
+    public struct Player
+    {
+        public PictureBox pictureBox;
+        public Point velocity;
+        public long timeStamp;
+    }
+
     public partial class Form1 : Form
     {
         public Random random;
 
         public int boxSize = 20;
-        public PictureBox playerBox;
-        public Point playerVel;
+
+        Player localPlayer;
+        Dictionary<int, Player> remotePlayers = new Dictionary<int, Player>();
 
         public AsynchronousClient client;
 
@@ -32,12 +41,14 @@ namespace Asynchronous_Client_Example1
         {
             if( !gameOn ) {
                 string sAddress = addressTextBox.Text;
-                string sPort = portTextBox.Text;
+                string sRemotePort = remotePortTextBox.Text;
+                string sLocalPort = localPortTextbox.Text;
 
-                if( sAddress == string.Empty
-                    || sPort == string.Empty ) { return; }
+                if( sAddress == string.Empty 
+                    || sRemotePort == string.Empty
+                    || sLocalPort == string.Empty ) { return; }
 
-                client.Connect(sAddress, sPort);
+                client.Connect( sAddress, sRemotePort, sLocalPort );
                 if( client.readyToSend ) {
 					client.StartListening();
                     AddPlayer();
@@ -50,54 +61,105 @@ namespace Asynchronous_Client_Example1
         private void disconnectButton_Click( object sender, EventArgs e )
         {
             gameOn = false;
-            if( playerBox != null ) {
-                canvas.Controls.Remove(playerBox);
+            if( localPlayer.pictureBox != null ) {
+                canvas.Controls.Remove(localPlayer.pictureBox);
             }
+            client.Disconnect();
         }
 
         #endregion
 
-        private void AddPlayer()
+        public delegate void UpdatePlayerDelegate( int identity, long timeStamp, int x, int y);
+        public void UpdatePlayer( int identity, long timeStamp, int x, int y )
         {
-            if( playerBox != null ) {
-                canvas.Controls.Remove(playerBox);
-            }
-            playerBox = new PictureBox();
-            playerBox.BackColor = Color.Red;
-            playerBox.Bounds = new Rectangle(random.Next(0, canvas.Bounds.Width - boxSize), random.Next(0, canvas.Bounds.Height - boxSize), boxSize, boxSize);
-
-            playerVel = Point.Empty;
-            while( Math.Abs(playerVel.X) < 3 
-                || Math.Abs(playerVel.Y) < 3 )
-            {
-                playerVel = new Point(random.Next(-4, 4), random.Next(-4, 4));
+            if( canvas.InvokeRequired ) {
+                UpdatePlayerDelegate del = new UpdatePlayerDelegate( UpdatePlayer );
+                Invoke( del, identity, timeStamp, x, y );
+                return;
             }
 
-            canvas.Controls.Add(playerBox);
+            if( identity == client.identity ) { return; }
+
+            Player player;
+            if( !remotePlayers.TryGetValue(identity, out player) ) {
+                AddPlayer(identity, timeStamp, x, y);
+                return;
+            }
+
+            if( timeStamp > player.timeStamp ) {
+                SetPlayerPosition(player, timeStamp, x, y);
+            }
         }
 
-        delegate void SetPlayerPositionDelegate( int x, int y);
-        public void SetPlayerPosition( int x, int y )
+        private void AddPlayer( int identity = -1, long timeStamp = -1, int x = -1, int y = -1 )
         {
-            if( playerBox.InvokeRequired ) {
-                SetPlayerPositionDelegate del = new SetPlayerPositionDelegate( SetPlayerPosition );
-                Invoke( del, new object[] { x, y } );
-            } else {
-                playerBox.Bounds = new Rectangle(x, y, boxSize, boxSize);
-                if( playerBox.Bounds.Left <= 0
-                    || playerBox.Bounds.Right >= canvas.Bounds.Width )
-                {
-                    playerVel = new Point(-playerVel.X, playerVel.Y);
-                }
+            bool isLocalPlayer = ( identity == -1 || identity == client.identity );
 
-                if( playerBox.Bounds.Top <= 0
-                    || playerBox.Bounds.Bottom >= canvas.Bounds.Height )
-                {
-                    playerVel = new Point(playerVel.X, -playerVel.Y);
-                }
+            Player player = new Player();
+            player.pictureBox = new PictureBox();
+            if( isLocalPlayer ) {
+                player.pictureBox.Bounds = new Rectangle(random.Next(0, canvas.Bounds.Width - boxSize), random.Next(0, canvas.Bounds.Height - boxSize), boxSize, boxSize);
+                player.pictureBox.BackColor = Color.Red;
+            } else {
+                player.pictureBox.Bounds = new Rectangle(x, y, boxSize, boxSize);
+                player.pictureBox.BackColor = Color.FromArgb(random.Next(int.MaxValue / 2, int.MaxValue));
+                player.timeStamp = timeStamp;
             }
 
-            client.SendPosition(playerBox.Bounds.Location);
+            player.velocity = Point.Empty;
+            while( Math.Abs(player.velocity.X) < 3 
+                || Math.Abs(player.velocity.Y) < 3 )
+            {
+                player.velocity = new Point(random.Next(-4, 4), random.Next(-4, 4));
+            }
+
+            if( isLocalPlayer && localPlayer.pictureBox != null ) {
+                canvas.Controls.Remove(localPlayer.pictureBox);
+            }
+            canvas.Controls.Add(player.pictureBox);
+            if( isLocalPlayer ) {
+                localPlayer = player;
+            } else {
+                remotePlayers.Add(identity, player);
+            }
+        }
+
+        delegate void SetPlayerPositionDelegate( Player player, long timeStamp, int x, int y);
+        public void SetPlayerPosition( Player player, long timeStamp, int x, int y )
+        {
+            if( player.pictureBox.InvokeRequired ) {
+                SetPlayerPositionDelegate del = new SetPlayerPositionDelegate( SetPlayerPosition );
+                Invoke( del, x, y );
+            } else {
+                player.pictureBox.Bounds = new Rectangle(x, y, boxSize, boxSize);
+                player.timeStamp = timeStamp;
+            }
+        }
+
+        delegate void SetLocalPlayerPositionDelegate( int x, int y);
+        public void SetLocalPlayerPosition( int x, int y )
+        {
+            if( localPlayer.pictureBox.InvokeRequired ) {
+                SetLocalPlayerPositionDelegate del = new SetLocalPlayerPositionDelegate( SetLocalPlayerPosition );
+                Invoke( del, x, y );
+                return;
+            }
+
+            localPlayer.pictureBox.Bounds = new Rectangle(x, y, boxSize, boxSize);
+
+            if( localPlayer.pictureBox.Bounds.Left <= 0
+                || localPlayer.pictureBox.Bounds.Right >= canvas.Bounds.Width )
+            {
+                localPlayer.velocity = new Point(-localPlayer.velocity.X, localPlayer.velocity.Y);
+            }
+
+            if( localPlayer.pictureBox.Bounds.Top <= 0
+                || localPlayer.pictureBox.Bounds.Bottom >= canvas.Bounds.Height )
+            {
+                localPlayer.velocity = new Point(localPlayer.velocity.X, -localPlayer.velocity.Y);
+            }
+
+            client.SendPosition(localPlayer.pictureBox.Bounds.Location);
         }
 
         public void StartGame()
@@ -113,7 +175,7 @@ namespace Asynchronous_Client_Example1
         void RunGame()
         {
             while( gameOn ) {
-                SetPlayerPosition(playerBox.Bounds.Location.X + playerVel.X, playerBox.Bounds.Location.Y + playerVel.Y);
+                SetLocalPlayerPosition(localPlayer.pictureBox.Bounds.Location.X + localPlayer.velocity.X, localPlayer.pictureBox.Bounds.Location.Y + localPlayer.velocity.Y);
 
                 Thread.Sleep(33);
             }
