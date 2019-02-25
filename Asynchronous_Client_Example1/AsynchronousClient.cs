@@ -89,14 +89,17 @@ namespace Asynchronous_Client_Example1
                 return readyToSend = false;
             }
 
-			Console.WriteLine("Successfully connected");
-            return readyToSend = true;
-        }
+			readyToSend = true;
 
+            long timeStamp = DateTime.UtcNow.Ticks;
+			SendMessage( string.Format("connect {0} {1} {2} {3}<EOF>", identity, timeStamp, "127.0.0.1", localPort) );
+
+			Console.WriteLine("Successfully connected");
+            return true;
+        }
         public void Disconnect()
         {
-            socket.Close();
-            listener.Close();
+			SendMessage( string.Format("disconnect {0}<EOF>", identity), true );
         }
 
 		public bool StartListening()
@@ -137,19 +140,70 @@ namespace Asynchronous_Client_Example1
 
 		}
 
-        void Interpret(string content)
-        {
-            string[] segments = content.Split(' ');
-            if( segments.Length < 4 ) { return; }
+		void Interpret( string content )
+		{
+			string[] segments = content.Split(' ');
+			if( segments.Length < 2 ) { return; }
 
-            int remoteIdentity;
+			string messageType = segments[0];
+
+			int remoteIdentity;
+            try {
+                remoteIdentity = int.Parse(segments[1]);
+            } catch( FormatException e ) {
+                Console.WriteLine("Failed to parse received message: " + segments);
+                return;
+            } catch( SystemException e ) {
+                Console.WriteLine("Unexpected error: " + e);
+                return;
+            }
+
+			if( remoteIdentity == identity ) { return; }
+
+			switch( messageType ) {
+				case "connect":
+					HandleConnect( remoteIdentity, segments );
+					break;
+				case "disconnect":
+					HandleDisconnect( remoteIdentity, segments );
+					break;
+				case "update":
+					HandleUpdate( remoteIdentity, segments );
+					break;
+			}
+
+		}
+		void HandleConnect( int remoteIdentity, string[] segments )
+		{
+			if( segments.Length < 3 ) { return; }
+
+			long timeStamp;
+            try {
+                timeStamp = long.Parse(segments[2]);
+            } catch( FormatException e ) {
+                Console.WriteLine("Failed to parse received message: " + segments);
+                return;
+            } catch( SystemException e ) {
+                Console.WriteLine("Unexpected error: " + e);
+                return;
+            }
+
+			Program.form.ConnectPlayer( remoteIdentity, timeStamp );
+		}
+		void HandleDisconnect( int remoteIdentity, string[] segments )
+		{
+			Program.form.DisconnectPlayer( remoteIdentity );
+		}
+        void HandleUpdate( int remoteIdentity, string[] segments )
+        {
+            if( segments.Length < 5 ) { return; }
+
             long timeStamp;
             int x, y;
             try {
-                remoteIdentity = int.Parse(segments[0]);
-                timeStamp = long.Parse(segments[1]);
-                x = int.Parse(segments[2]);
-                y = int.Parse(segments[3]);
+                timeStamp = long.Parse(segments[2]);
+                x = int.Parse(segments[3]);
+                y = int.Parse(segments[4]);
             } catch( FormatException e ) {
                 Console.WriteLine("Failed to parse received message: " + segments);
                 return;
@@ -162,7 +216,7 @@ namespace Asynchronous_Client_Example1
             Program.form.UpdatePlayer( remoteIdentity, timeStamp, x, y );
         }
 
-        public bool SendMessage( string message )
+        public bool SendMessage( string message, bool closeAfterSending = false )
         {
             if( !readyToSend ) { return false; }
 
@@ -173,6 +227,11 @@ namespace Asynchronous_Client_Example1
             socket.BeginSendTo(state.buffer, 0, state.buffer.Length, 0, endPoint, 
                     new AsyncCallback(SendCallback), state);
 
+			if( closeAfterSending ) {
+				socket.Close(5);
+				listener.Close(5);
+			}
+
             return true;
         }
         public bool SendPosition( Point pos )
@@ -181,7 +240,7 @@ namespace Asynchronous_Client_Example1
 
             long timeStamp = DateTime.UtcNow.Ticks;
 
-			string message = identity + " " + timeStamp + " " + pos.X + " " + pos.Y + "<EOF>";
+			string message = string.Format( "update {0} {1} {2} {3}<EOF>", identity, timeStamp, pos.X, pos.Y );
 			//Console.WriteLine( "Sent: " + message );
 			SendMessage(message);
 
@@ -190,10 +249,14 @@ namespace Asynchronous_Client_Example1
 
         void SendCallback( IAsyncResult result )
         {
-            StateObject state = (StateObject)result.AsyncState;
-            Socket workingSocket = state.workSocket;
+			try {
+				StateObject state = (StateObject)result.AsyncState;
+				Socket workingSocket = state.workSocket;
 
-            int bytesSent = workingSocket.EndSendTo(result);
+				int bytesSent = workingSocket.EndSendTo(result);
+			} catch( ObjectDisposedException e ) {
+				return;
+			}
         }
     }
 }
