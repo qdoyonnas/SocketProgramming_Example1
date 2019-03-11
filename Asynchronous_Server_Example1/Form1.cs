@@ -38,6 +38,29 @@ namespace Asynchronous_Server_Example1
 
 		#endregion
 
+        delegate void UpdatePlayerCountDelegate( int count );
+        public void UpdatePlayerCount( int count )
+        {
+            if( playerCountLabel.InvokeRequired ) {
+                UpdatePlayerCountDelegate del = new UpdatePlayerCountDelegate( UpdatePlayerCount );
+                Invoke( del, count );
+                return;
+            }
 
+            playerCountLabel.Text = count.ToString();
+        }
+
+        delegate void PrintLogDelegate( string log );
+        public void PrintLog( string log )
+        {
+            if( logTextBox.InvokeRequired ) {
+                PrintLogDelegate del = new PrintLogDelegate( PrintLog );
+                Invoke( del, log );
+                return;
+            }
+
+            if( logTextBox.Text != string.Empty ) {  log = "\n" + log; }
+            logTextBox.AppendText(log);
+        }
 	}
 }

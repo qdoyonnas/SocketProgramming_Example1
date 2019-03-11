@@ -76,6 +76,7 @@
 			this.logTextBox.Size = new System.Drawing.Size(288, 288);
 			this.logTextBox.TabIndex = 14;
 			this.logTextBox.Text = "";
+            this.logTextBox.HideSelection = false;
 			// 
 			// label3
 			// 

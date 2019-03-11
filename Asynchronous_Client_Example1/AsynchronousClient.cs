@@ -28,10 +28,19 @@ namespace Asynchronous_Client_Example1
         private int localPort;
         private Socket listener;
 		EndPoint localEndPoint;
+        private IPAddress localAddress;
 
         public AsynchronousClient()
         {
 			identity = new Random().Next();
+
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach( IPAddress ip in host.AddressList ) {
+                if( ip.AddressFamily == AddressFamily.InterNetwork ) {
+                    localAddress = ip;
+                    break;
+                }
+            }
         }
 
         public bool Connect( string sAddress, string sRemotePort, string sLocalPort )
@@ -92,14 +101,20 @@ namespace Asynchronous_Client_Example1
 			readyToSend = true;
 
             long timeStamp = DateTime.UtcNow.Ticks;
-			SendMessage( string.Format("connect {0} {1} {2} {3}<EOF>", identity, timeStamp, "127.0.0.1", localPort) );
+			SendMessage( string.Format("connect {0} {1} {2} {3}", identity, timeStamp, localAddress.ToString(), localPort) );
 
 			Console.WriteLine("Successfully connected");
             return true;
         }
         public void Disconnect()
         {
-			SendMessage( string.Format("disconnect {0}<EOF>", identity), true );
+            if( !readyToSend ) { return; }
+
+			SendMessage( string.Format("disconnect {0}", identity), true );
+            listener.Close(5);
+            socket.Close(5);
+
+            readyToSend = false;
         }
 
 		public bool StartListening()
@@ -192,7 +207,7 @@ namespace Asynchronous_Client_Example1
 		}
 		void HandleDisconnect( int remoteIdentity, string[] segments )
 		{
-			Program.form.DisconnectPlayer( remoteIdentity );
+			//Program.form.DisconnectPlayer( remoteIdentity );
 		}
         void HandleUpdate( int remoteIdentity, string[] segments )
         {
@@ -220,6 +235,8 @@ namespace Asynchronous_Client_Example1
         {
             if( !readyToSend ) { return false; }
 
+            message += "<EOF>";
+
             StateObject state = new StateObject();
             state.buffer = Encoding.ASCII.GetBytes(message);
             state.workSocket = socket;
@@ -240,7 +257,7 @@ namespace Asynchronous_Client_Example1
 
             long timeStamp = DateTime.UtcNow.Ticks;
 
-			string message = string.Format( "update {0} {1} {2} {3}<EOF>", identity, timeStamp, pos.X, pos.Y );
+			string message = string.Format( "update {0} {1} {2} {3}", identity, timeStamp, pos.X, pos.Y );
 			//Console.WriteLine( "Sent: " + message );
 			SendMessage(message);
 

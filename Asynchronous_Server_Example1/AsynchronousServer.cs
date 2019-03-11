@@ -74,6 +74,7 @@ namespace Asynchronous_Server_Example1
 			}
 
 			readyToSend = true;
+            Program.form.PrintLog("Server started");
 			StartListening();
 
 			return true;
@@ -82,6 +83,7 @@ namespace Asynchronous_Server_Example1
 		{
 			listener.Close(5);
 			socket.Close(5);
+            Program.form.PrintLog("Server stopped");
 		}
 
 		void StartListening()
@@ -106,7 +108,7 @@ namespace Asynchronous_Server_Example1
 				    int eofIndex = content.IndexOf("<EOF>");
 				    if( eofIndex > -1 ) {
 					    content = content.Substring(0, eofIndex);
-						Console.WriteLine("Received Message: " + content);
+						//Console.WriteLine("Received Message: " + content);
                         Interpret(content);
 
 					    StartListening();
@@ -175,8 +177,15 @@ namespace Asynchronous_Server_Example1
 			}
 			if( subjectClient == null ) {
 				subjectClient = new Client( remoteIdentity, timeStamp, new IPEndPoint(address, port) );
+
+                foreach( Client client in clients ) {
+                    SendMessage(subjectClient.endPoint, 
+                        string.Format("connect {0} {1}", client.identity, client.timeStamp) );
+                }
+
 				clients.Add(subjectClient);
-				Console.WriteLine("Player connected");
+                Program.form.PrintLog("Player connected, id: " + subjectClient.identity);
+                Program.form.UpdatePlayerCount(clients.Count);
 			} else {
 				subjectClient.timeStamp = timeStamp;
 			}
@@ -192,7 +201,8 @@ namespace Asynchronous_Server_Example1
 			}
 			if( subjectClient != null ) {
 				clients.Remove(subjectClient);
-				Console.WriteLine("Player disconnected");
+                Program.form.PrintLog("Player disconnected, id: " + subjectClient.identity);
+                Program.form.UpdatePlayerCount(clients.Count);
 			}
 		}
 		void HandleOther( int remoteIdentity, string[] segments )
@@ -220,21 +230,27 @@ namespace Asynchronous_Server_Example1
 			}
 		}
 
+        void SendMessage( IPEndPoint endPoint, string content )
+        {
+            if( !readyToSend ) { return; }
+
+			content += "<EOF>";
+
+            StateObject state = new StateObject();
+			state.buffer = Encoding.ASCII.GetBytes(content);
+			state.workSocket = socket;
+
+            socket.BeginSendTo( state.buffer, 0, state.buffer.Length, 0, endPoint,
+							new AsyncCallback( SendCallback ), state );
+        }
 		void Relay( int remoteIdentity, string content )
 		{
 			if( !readyToSend ) { return; }
 
-			content += "<EOF>";
-
-			StateObject state = new StateObject();
-			state.buffer = Encoding.ASCII.GetBytes(content);
-			state.workSocket = socket;
-
 			foreach( Client client in clients ) {
 				if( client.identity == remoteIdentity ) { continue; }
 
-				socket.BeginSendTo( state.buffer, 0, state.buffer.Length, 0, client.endPoint,
-							new AsyncCallback( SendCallback ), state );
+				SendMessage(client.endPoint, content);
 			}
 		}
 		void SendCallback( IAsyncResult result )
